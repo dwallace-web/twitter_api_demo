@@ -28,7 +28,7 @@ list_members.extend(res_data)
 print(len(list_members))
 
 
-member_dic = {}
+# member_dic = {}
 
 while has_token:
     if "next_token" in Response.meta:
@@ -56,20 +56,17 @@ for member in list_members:
     print(str(member) + " | " + str(member.id))
 """
 
-
-# writing to a dictionary
-for member in list_members:
-    # print the follower count for each member
-    member_data = api.get_user(user_id=str(member.id))
-    # print(member_data.verified)
-    member_dic.add({"username": member.screen_name, "member_id": member.id,
-                   "member_followers": member.followers_count, "verified": member.verified})
-print(member_dic)
-
-user_info = ['userID', 'username', 'follower_count', 'verification_status']
-
 # Build CSV File
+user_info = ['userID', 'username', 'follower_count', 'verification_status']
 with open('data.csv', 'w') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames = user_info)
-    writer.writeheader()
-    writer.writerows(member_dic)
+    writer = csv.writer(csvfile)
+    writer.writerow(user_info)
+
+    # writing to a dictionary
+    for member in list_members:
+        # print the follower count for each member
+        member_data = api.get_user(user_id=str(member.id))
+        time.sleep(1.2)
+        member_info = [member_data.screen_name, member_data.id,
+                       member_data.followers_count, member_data.verified]
+        writer.writerow(member_info)
