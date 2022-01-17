@@ -17,7 +17,7 @@ user2 = api.get_user(screen_name=my_name)
 print(user2.followers_count)
 
 # the ID of the Roster list
-list_id = '1290447421357666311'
+list_id = '1478967604228276224'
 list_members = []
 has_token = True
 
@@ -40,13 +40,13 @@ while has_token:
         # print(Response.data)
         # print(Response.meta)
         list_members.extend(Response.data)
-        print(len(list_members))
+        print("Current number of members..." + str(len(list_members)))
         time.sleep(1)
     else:
         has_token = False
         # print(list_members)
         print("no more tokens")
-        print("Final Count" + str(len(list_members)))
+        print("Final Count of members: " + str(len(list_members)))
         # time.sleep(3)
         print("end loop")
 
@@ -58,7 +58,8 @@ for member in list_members:
 
 # Build CSV File
 user_info = ['userID', 'username', 'follower_count', 'verification_status']
-with open('data.csv', 'w') as csvfile:
+
+with open('data.csv', 'w', newline="") as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(user_info)
 
@@ -66,7 +67,10 @@ with open('data.csv', 'w') as csvfile:
     for member in list_members:
         # print the follower count for each member
         member_data = api.get_user(user_id=str(member.id))
-        time.sleep(1.2)
+        time.sleep(3)
         member_info = [member_data.screen_name, member_data.id,
                        member_data.followers_count, member_data.verified]
         writer.writerow(member_info)
+        print("end loop for member")
+
+csvfile.close()
