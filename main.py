@@ -4,6 +4,10 @@ from tweepy.api import pagination
 from tweepy.client import Response
 import config
 import csv
+from datetime import date
+
+# date
+current_date = str(date.today())
 
 # SIMPLE STRUCTURE
 my_name = 'dtheblerd'
@@ -17,7 +21,7 @@ user2 = api.get_user(screen_name=my_name)
 print(user2.followers_count)
 
 # the ID of the Roster list
-list_id = '1478967604228276224'
+list_id = '1230334838437228544'
 list_members = []
 has_token = True
 
@@ -59,7 +63,7 @@ for member in list_members:
 # Build CSV File
 user_info = ['userID', 'username', 'follower_count', 'verification_status']
 
-with open('data.csv', 'w', newline="") as csvfile:
+with open(f"data_{current_date}_{list_id}", 'w', newline="") as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(user_info)
 
