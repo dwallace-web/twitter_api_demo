@@ -21,7 +21,7 @@ user2 = api.get_user(screen_name=my_name)
 print(user2.followers_count)
 
 # the ID of the Roster list
-list_id = '1230334838437228544'
+list_id = '1478967604228276224'
 list_members = []
 has_token = True
 
