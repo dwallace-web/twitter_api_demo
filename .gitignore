@@ -1,3 +1,4 @@
 config.py
 /tweets
 __pycache__
+*.[csv]
