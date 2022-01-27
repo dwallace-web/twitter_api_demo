@@ -1,3 +1,4 @@
+import datetime
 import time
 import tweepy
 from tweepy.api import pagination
@@ -5,6 +6,7 @@ from tweepy.client import Response
 import config
 import csv
 from datetime import date
+from datetime import datetime
 import os.path
 
 
@@ -68,7 +70,7 @@ user_info = ['date', 'userID', 'username',
 
 # does the file exist
 
-with open(f"data_{list_id}", 'a', newline="") as csvfile:
+with open("data_{list_id}.csv".format(list_id=list_id), 'a', newline="") as csvfile:
     writer = csv.writer(csvfile)
 
     # check if csv file has a head
@@ -82,9 +84,14 @@ with open(f"data_{list_id}", 'a', newline="") as csvfile:
     for member in list_members:
         # print the follower count for each member
         member_data = api.get_user(user_id=str(member.id))
-        time.sleep(3)
-        member_info = [current_date, member_data.screen_name, member_data.id,
+        time.sleep(5)
+
+        collection = datetime.now()
+
+        member_info = [collection, member_data.screen_name, member_data.id,
                        member_data.followers_count, member_data.verified, list_id]
+        print(member_info)
+
         writer.writerow(member_info)
         print("end loop for member")
 
