@@ -42,20 +42,20 @@ while has_token:
     if "next_token" in Response.meta:
         print("I will try again")
         next_token = Response.meta["next_token"]
-        print("Token is " + str(next_token))
+        # print("Token is " + str(next_token))
         Response = client.get_list_members(
             list_id, pagination_token=next_token)
         # print(Response.data)
         # print(Response.meta)
         list_members.extend(Response.data)
         print("Current number of members..." + str(len(list_members)))
-        time.sleep(1)
+        time.sleep(4)
     else:
         has_token = False
         # print(list_members)
-        print("no more tokens")
+        # print("no more tokens")
         print("Final Count of members: " + str(len(list_members)))
-        # time.sleep(3)
+        time.sleep(10)
         print("end loop")
 
 """
@@ -84,7 +84,7 @@ with open("data_{list_id}.csv".format(list_id=list_id), 'a', newline="") as csvf
     for member in list_members:
         # print the follower count for each member
         member_data = api.get_user(user_id=str(member.id))
-        time.sleep(5)
+        time.sleep(6)
 
         collection = datetime.now()
 
@@ -93,6 +93,6 @@ with open("data_{list_id}.csv".format(list_id=list_id), 'a', newline="") as csvf
         print(member_info)
 
         writer.writerow(member_info)
-        print("end loop for member")
+        # print("end loop for member")
 
 csvfile.close()
