@@ -2,6 +2,7 @@ import tweepy
 from tweepy.api import pagination
 from tweepy.client import Response
 import config
+import time
 from datetime import date
 
 # date
@@ -21,7 +22,7 @@ print("% s has % s followers" % (self1.data, self2.followers_count))
 # How to write a query #dev docs -- https://developer.twitter.com/en/docs/twitter-api/tweets/search/integrate/build-a-query
 # How to write an academic query -- https://github.com/twitterdev/getting-started-with-the-twitter-api-v2-for-academic-research
 
-query = 'AEW -is:retweet -is:reply is:verified -is:reply is:verified'
+query = "#aewdynamite -is:retweet -is:reply is:verified -is:reply is:verified lang:en"
 
 res = client.search_recent_tweets(
     query=query,
@@ -33,21 +34,21 @@ res = client.search_recent_tweets(
                   'id',
                   'author_id',
                   'referenced_tweets',
-                  'conversation_id'
+                  'conversation_id',
+                  'geo'
                   ],
+    place_fields=['country'],
     expansions=['author_id'],
-    user_fields=['username', 'id', 'description', 'name']
+    user_fields=['username',
+                 'id',
+                 'description',
+                 'name']
 )
-# print(res)
-# print(res.includes['users'])
-
+tweets = res.data
 users = {u['id']: u for u in res.includes['users']}
 
-for tweet in res.data:
-    if users[tweet.author_id]:
-        user = users[tweet.author_id]
-        print("This tweet is from % s using the % s"
-              % (user.username, tweet.source))
-        print(tweet.text)
-
-print('review')
+for tweet in tweets:
+    user = users[tweet.author_id]
+    print("This tweet is from @% s using the % s"
+          % (user.username, tweet.source))
+    print(tweet.text)
