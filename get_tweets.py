@@ -26,7 +26,7 @@ query = "#aewdynamite -is:retweet -is:reply is:verified -is:reply is:verified la
 
 res = client.search_recent_tweets(
     query=query,
-    max_results=10,
+    max_results=100,
     tweet_fields=['lang',
                   'created_at',
                   'public_metrics',
@@ -52,3 +52,40 @@ for tweet in tweets:
     print("This tweet is from @% s using the % s"
           % (user.username, tweet.source))
     print(tweet.text)
+
+has_token = True
+
+
+while has_token:
+    if "next_token" in res.meta:
+        tweet_count = len(tweets)
+        token = res.meta["next_token"]
+        print("Token is " + str(token))
+        res = client.search_recent_tweets(
+            query=query,
+            next_token=token,
+            max_results=100,
+            tweet_fields=['lang',
+                          'created_at',
+                          'public_metrics',
+                          'source',
+                          'id',
+                          'author_id',
+                          'referenced_tweets',
+                          'conversation_id',
+                          'geo'
+                          ],
+            place_fields=['country'],
+            expansions=['author_id'],
+            user_fields=['username',
+                         'id',
+                         'description',
+                         'name']
+        )
+        tweets.extend(res.data)
+        print("Current number of tweets..." + str(tweet_count))
+        time.sleep(2)
+    else:
+        has_token = False
+        time.sleep(10)
+        print("end loop")
