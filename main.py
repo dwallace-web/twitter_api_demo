@@ -1,8 +1,8 @@
+import config
 import time
 import tweepy
 from tweepy.api import pagination
 from tweepy.client import Response
-import config
 import csv
 from datetime import date
 
