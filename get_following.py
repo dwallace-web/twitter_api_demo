@@ -1,15 +1,10 @@
-import time
-import tweepy
+import time, tweepy, config, csv, os, requests
 from tweepy.api import pagination
 from tweepy.client import Response
-import config
-import csv
-from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 
 # date
 collection = str(date.today())
-
 start_time = str(datetime.now())
 print(f'Scrape started at {start_time}')
 
@@ -52,7 +47,7 @@ def fetch_users():
     follower_count = 0
 
     for i in following:
-            if count <= 10: 
+            if count <= 3: 
                 fetch = Client.get_users_tweets(i.id, max_results=100,tweet_fields=['created_at','public_metrics'])
 
                 get_recent_tweets = fetch.data
@@ -83,9 +78,9 @@ def fetch_users():
                 data_for_csv.append(following_info)
 
                 count+=1
-
-                print(f'@{i.username} user {count} of {total_users} is complete, next!')
-                time.sleep(4)
+                user_time = str(datetime.now())
+                print(f'At {user_time} @{i.username} user {count} of {total_users} was completed, next!')
+                # time.sleep(1)
             else:
                 continue
     
@@ -94,7 +89,7 @@ def fetch_users():
     write_to_file()
 
 def write_to_file():
-    with open(f"data_following_{collection}.csv", 'a', newline="") as csvfile:
+    with open(f'data_following_{collection}.csv', 'a', newline="") as csvfile:
         writer = csv.writer(csvfile)
 
         #header 

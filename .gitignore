@@ -1,7 +1,8 @@
 config.py
 /tweets
 __pycache__
-*.[csv]
 .venv
 /.vscode
 /data_scraped
+* .csv
+*.[csv]
