@@ -16,9 +16,6 @@ print(f'Scrape started at {start_time}')
 # SIMPLE STRUCTURE
 
 Client = tweepy.Client(bearer_token=config.BEARER_TOKEN)
-# auth = tweepy.OAuthHandler(consumer_key=config.API_KEY,consumer_secret=config.API_KEY_SECRET)
-# api = tweepy.API(auth)
-
 user = Client.get_user(username=config.MY_USERNAME)
 # user2 = api.get_user(screen_name=config.MY_USERNAME)
 
@@ -33,68 +30,100 @@ res = Client.get_users_following(
     ,'description'
     ,'created_at'
     ,'withheld'
+    ,'url'
     ]
 )
 
 following = res.data
 following.reverse()
 
-date_tweeted = ''
-tweet_text = ''
-follower_count = 0
+count = 0
 
-with open(f"data_following_{collection}.csv", 'a', newline="") as csvfile:
-    writer = csv.writer(csvfile)
+total_users = len(following)
+data_for_csv = []
+retain_api_data = []
 
-    #header 
-    user_info = [
-        'collection date',
-        'customer id',
-        'username',
-        'verified',
-        'bio',
-        'display name',
-        'tweet date',
-        'tweet body',
-        'following count',
-        'follower count'
-    ]
-    writer.writerow(user_info)
 
-    #build final csv
+def fetch_users():
+    global count
+
+    date_tweeted = ''
+    tweet_text = ''
+    follower_count = 0
+
     for i in following:
-        
-        get_recent_tweets = Client.get_users_tweets(i.id, max_results=5,tweet_fields=['created_at','public_metrics']).data
+            if count <= 10: 
+                fetch = Client.get_users_tweets(i.id, max_results=100,tweet_fields=['created_at','public_metrics'])
 
-        if get_recent_tweets is not None:
-            date_tweeted = get_recent_tweets[0].created_at
-        else:
-            date_tweeted = "Unknown Date"
-        
-        if get_recent_tweets is not None:
-            tweet_text = get_recent_tweets[0].text
-        else:
-            tweet_text = "Unknown Tweet"
+                get_recent_tweets = fetch.data
+                
+                if i.protected is True:
+                    date_tweeted = "Unknown Date"
+                    tweet_text = "Unknown Tweet"
+                else:
+                    tweet_text = get_recent_tweets[0].text
+                    date_tweeted = get_recent_tweets[0].created_at
 
-        following_info = [
-        collection,
-        i.id,
-        i.username,
-        i.verified,
-        i.description,
-        i.name,
-        date_tweeted,
-        tweet_text,
-        i.public_metrics['following_count'],
-        i.public_metrics['followers_count']
-        ]  
+                following_info = [
+                collection,
+                i.id,
+                i.username,
+                i.verified,
+                i.location,
+                i.description,
+                i.name,
+                date_tweeted,
+                tweet_text,
+                i.public_metrics['following_count'],
+                i.public_metrics['followers_count'],
+                i.public_metrics['tweet_count'],
+                i.url
+                ]  
 
-        writer.writerow(following_info)
+                data_for_csv.append(following_info)
 
-        # print(f'@{i.username} is complete, next!')
-        time.sleep(5)
+                count+=1
 
-csvfile.close()
+                print(f'@{i.username} user {count} of {total_users} is complete, next!')
+                time.sleep(4)
+            else:
+                continue
+    
+    end_time = str(datetime.now())
+    print(f'Scrape ended at {end_time}')
+    write_to_file()
 
-end_time = str(datetime.now())
-print(f'Scrape ended at {end_time}')
+def write_to_file():
+    with open(f"data_following_{collection}.csv", 'a', newline="") as csvfile:
+        writer = csv.writer(csvfile)
+
+        #header 
+        user_info = [
+            'collection date',
+            'customer id',
+            'username',
+            'verified',
+            'location',
+            'bio',
+            'display name',
+            'tweet date',
+            'tweet body',
+            'following count',
+            'follower count',
+            'total tweets',
+            'outbound link'
+        ]
+        writer.writerow(user_info)
+        for i in data_for_csv:
+            writer.writerow(i)
+    csvfile.close()
+
+def store_everything():
+    with open(f"store_everything_{collection}.csv", 'a', newline="") as csv_2:
+        writer = csv.writer(csv_2)
+        for i in retain_api_data:
+            writer.writerow(retain_api_data)
+    csv_2.close()
+
+fetch_users()
+# store_everything()
